@@ -127,7 +127,18 @@ func (j *Job) GetBuild(ctx context.Context, id int64) (*Build, error) {
 		return nil, err
 	}
 	jobURL := url.Path
-	build := Build{Jenkins: j.Jenkins, Job: j, Raw: new(BuildResponse), Depth: 1, Base: jobURL + "/" + strconv.FormatInt(id, 10)}
+	// the url.path we get contains whatever path we have in base, we need to remove it.
+	baseUrl, err := url.Parse(j.Jenkins.Server)
+	if err != nil {
+		return nil, err
+	}
+	jenkinsWithOnlyBase := &Jenkins{
+		Server:    baseUrl.Host,
+		Version:   j.Jenkins.Version,
+		Raw:       j.Jenkins.Raw,
+		Requester: j.Jenkins.Requester,
+	}
+	build := Build{Jenkins: jenkinsWithOnlyBase, Job: j, Raw: new(BuildResponse), Depth: 1, Base: jobURL + "/" + strconv.FormatInt(id, 10)}
 	status, err := build.Poll(ctx)
 	if err != nil {
 		return nil, err
