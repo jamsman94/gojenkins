@@ -132,8 +132,9 @@ func (j *Job) GetBuild(ctx context.Context, id int64) (*Build, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf("server %s\n", baseUrl.Scheme+baseUrl.Host)
 	jenkinsWithOnlyBase := &Jenkins{
-		Server:    baseUrl.Host,
+		Server:    baseUrl.Scheme + baseUrl.Host,
 		Version:   j.Jenkins.Version,
 		Raw:       j.Jenkins.Raw,
 		Requester: j.Jenkins.Requester,
